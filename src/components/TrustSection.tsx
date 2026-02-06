@@ -20,7 +20,7 @@ const trustItems = [
 
 const TrustSection = () => {
   return (
-    <section className="py-24 relative bg-secondary/30">
+    <section id="trust" className="py-24 relative bg-secondary/30">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-16">

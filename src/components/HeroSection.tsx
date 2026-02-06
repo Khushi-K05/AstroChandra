@@ -3,8 +3,22 @@ import { Sparkles, Star } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
+  const scrollToWaitlist = () => {
+    const element = document.querySelector("#waitlist");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const scrollToFeatures = () => {
+    const element = document.querySelector("#features");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-40"
@@ -38,11 +52,11 @@ const HeroSection = () => {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button variant="hero" size="xl">
+            <Button variant="hero" size="xl" onClick={scrollToWaitlist}>
               <Star className="w-5 h-5" />
               Join Early Access
             </Button>
-            <Button variant="outline" size="lg">
+            <Button variant="outline" size="lg" onClick={scrollToFeatures}>
               Explore Services
             </Button>
           </div>
