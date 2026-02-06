@@ -4,7 +4,7 @@ import astrologerImage from "@/assets/astrologer-1.jpg";
 
 const AstrologerCard = () => {
   return (
-    <section className="py-24 relative">
+    <section id="astrologers" className="py-24 relative">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-16">
