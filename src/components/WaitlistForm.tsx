@@ -8,14 +8,67 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Sparkles, Check } from "lucide-react";
+import { Sparkles, Check, Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+
+// Replace this with your deployed Google Apps Script Web App URL
+const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL";
 
 const WaitlistForm = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    role: ""
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    
+    if (!formData.name || !formData.email || !formData.role) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill in all fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          role: formData.role,
+          created_at: new Date().toISOString()
+        }),
+      });
+
+      // With no-cors mode, we can't read the response, but if no error was thrown, assume success
+      setSubmitted(true);
+      setFormData({ name: "", email: "", role: "" });
+      toast({
+        title: "You're on the list!",
+        description: "We'll notify you when we launch.",
+      });
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast({
+        title: "Submission failed",
+        description: "Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -49,7 +102,10 @@ const WaitlistForm = () => {
                     <Input
                       type="text"
                       placeholder="Your Name"
+                      value={formData.name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                       required
+                      disabled={isLoading}
                       className="h-12 rounded-xl bg-secondary border-border focus:border-primary"
                     />
                   </div>
@@ -57,12 +113,19 @@ const WaitlistForm = () => {
                     <Input
                       type="email"
                       placeholder="Email Address"
+                      value={formData.email}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                       required
+                      disabled={isLoading}
                       className="h-12 rounded-xl bg-secondary border-border focus:border-primary"
                     />
                   </div>
                   <div>
-                    <Select required>
+                    <Select 
+                      value={formData.role} 
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, role: value }))}
+                      disabled={isLoading}
+                    >
                       <SelectTrigger className="h-12 rounded-xl bg-secondary border-border">
                         <SelectValue placeholder="I am a..." />
                       </SelectTrigger>
@@ -73,8 +136,15 @@ const WaitlistForm = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Button type="submit" variant="hero" className="w-full mt-6">
-                    Join Waitlist
+                  <Button type="submit" variant="hero" className="w-full mt-6" disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Joining...
+                      </>
+                    ) : (
+                      "Join Waitlist"
+                    )}
                   </Button>
                 </form>
 
